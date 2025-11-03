@@ -17,8 +17,8 @@ struct MinHeap {
     void push(int idx, int weightArr[]) {
         // TODO: insert index at end of heap, restore order using upheap()
         data[size] = idx;
-        upheap(size, weightArr);
         size++;
+        upheap(size - 1, weightArr);
     }
 
     int pop(int weightArr[]) {
@@ -38,7 +38,7 @@ struct MinHeap {
             if (weightArr[pos] > weightArr[parent]) {
                 //Not totally sure if we're able to use the built in functions, but it autofilled it for me
                 // so I'm just going to leave it for now.
-                swap(parent, pos);
+                swap(data[parent], data[pos]);
                 pos = parent;
             }
             else {
