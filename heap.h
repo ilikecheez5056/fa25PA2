@@ -35,7 +35,7 @@ struct MinHeap {
         // TODO: swap child upward while smaller than parent
         while (pos > 0) {
             int parent = (pos - 1) / 2;
-            if (weightArr[data[pos]] > weightArr[data[parent]]) {
+            if (weightArr[data[pos]] < weightArr[data[parent]]) {
                 //Not totally sure if we're able to use the built in functions, but it autofilled it for me
                 // so I'm just going to leave it for now.
                 swap(data[parent], data[pos]);
@@ -55,11 +55,11 @@ struct MinHeap {
             int left = (pos * 2) + 1;
             int smallest = pos;
             // if the left side is bigger than the parent then set smallest left to smallest
-            if (left < size && weightArr[left] < weightArr[smallest]) {
+            if (left < size && weightArr[data[left]] < weightArr[data[smallest]]) {
                 smallest = left;
             }
             // if right is bigger than parent then set it as the smallest
-            if (right < size && weightArr[right] < weightArr[smallest]) {
+            if (right < size && weightArr[data[right]] < weightArr[data[smallest]]) {
                 smallest = right;
             }
             // if it's already the smallest then end loop
@@ -67,7 +67,7 @@ struct MinHeap {
                 break;
             }
             // if it's still not the smallest then keep going
-            swap(pos, smallest);
+            swap(data[pos], data[smallest]);
             pos = smallest;
         }
     }

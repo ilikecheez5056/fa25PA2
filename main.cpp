@@ -140,6 +140,7 @@ void generateCodes(int root, string codes[]) {
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
     stack<pair<int, string>> stack;
+    // push the root node onto the stack
     stack.push({root, ""});
 
     cout << "Starting DFS code generation...\n";
@@ -151,15 +152,22 @@ void generateCodes(int root, string codes[]) {
         int node = top.first;
         string code = top.second;
 
+        // check if it's a leaf node by seeing if the children are both -1
         if (leftArr[node] == -1 && rightArr[node] == -1) {
-            codes[node] = code;
+            codes[charArr[node] - 'a'] = code;
             cout << "Leaf '" << charArr[node] << "' => code " << code << "\n";
-        } else {
+        } else { // if not then the right child will get pushed on as a 1 and the left as a 0
             if (rightArr[node] != -1) {
-                stack.push({rightArr[node], code});
+                pair<int, string> rightPair;
+                rightPair.first = rightArr[node];
+                rightPair.second = code + "1";
+                stack.push(rightPair);
             }
             if (leftArr[node] != -1) {
-                stack.push({leftArr[node], code});
+                pair<int, string> leftPair;
+                leftPair.first = leftArr[node];
+                leftPair.second = code + "0";
+                stack.push(leftPair);
             }
         }
     }
