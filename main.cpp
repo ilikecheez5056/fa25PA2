@@ -69,6 +69,10 @@ void buildFrequencyTable(int freq[], const string& filename) {
     file.close();
 
     cout << "Frequency table built successfully.\n";
+    for (int i = 0; i < 26; ++i) {
+        if (freq[i] > 0)
+            cout << (char)('a' + i) << ": " << freq[i] << "\n";
+    }
 }
 
 // Step 2: Create leaf nodes for each character
@@ -80,6 +84,7 @@ int createLeafNodes(int freq[]) {
             weightArr[nextFree] = freq[i];
             leftArr[nextFree] = -1;
             rightArr[nextFree] = -1;
+            cout << "Leaf node created for " << charArr[nextFree] << " (weight " << weightArr[nextFree] << ")\n";
             nextFree++;
         }
     }
@@ -99,10 +104,12 @@ int buildEncodingTree(int nextFree) {
     //    - Push new parent index back into the heap
     // 4. Return the index of the last remaining node (root)
     MinHeap heap;
+    cout << "Pushing leaf nodes into heap...\n";
 
     for (int i = 0; i < nextFree; i++) {
         if (weightArr[i] >0) {
             heap.push(i, weightArr);
+            cout << "  pushed index " << i << " (weight " << weightArr[i] << ")\n";
         }
     }
 
@@ -110,15 +117,20 @@ int buildEncodingTree(int nextFree) {
         int left = heap.pop(weightArr);
         int right = heap.pop(weightArr);
 
+        cout << "Combining nodes " << left << " and " << right << "\n";
+
         int parent = nextFree + 1;
         weightArr[parent] = weightArr[left] + weightArr[right];
         leftArr[parent] = left;
         rightArr[parent] = right;
 
         heap.push(parent, weightArr);
+        cout << "  new parent node " << parent << " (weight " << weightArr[parent] << ")\n";
     }
+    int root = heap.pop(weightArr);
+    cout << "Final root index: " << root << "\n";
+    return root; // placeholder
 
-    return heap.pop(weightArr); // placeholder
 }
 
 // Step 4: Use an STL stack to generate codes
@@ -130,9 +142,27 @@ void generateCodes(int root, string codes[]) {
     stack<pair<int, string>> stack;
     stack.push({root, ""});
 
+    cout << "Starting DFS code generation...\n";
+
     while (!stack.empty()) {
         pair<int, string> top = stack.top();
+        stack.pop();
 
+        int node = top.first;
+        string code = top.second;
+
+        if (leftArr[node] == -1 && rightArr[node] == -1) {
+            codes[node] = code;
+            cout << "Leaf '" << charArr[node] << "' => code " << code << "\n";
+        } else {
+            if (rightArr[node] != -1) {
+                stack.push({rightArr[node], code});
+            }
+            if (leftArr[node] != -1) {
+                stack.push({leftArr[node], code});
+            }
+        }
+    }
 
 }
 
