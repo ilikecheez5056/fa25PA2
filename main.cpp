@@ -67,12 +67,13 @@ void buildFrequencyTable(int freq[], const string& filename) {
             freq[ch - 'a']++;
     }
     file.close();
-
+    /*
     cout << "Frequency table built successfully.\n";
     for (int i = 0; i < 26; ++i) {
         if (freq[i] > 0)
             cout << (char)('a' + i) << ": " << freq[i] << "\n";
     }
+    */
 }
 
 // Step 2: Create leaf nodes for each character
@@ -84,11 +85,9 @@ int createLeafNodes(int freq[]) {
             weightArr[nextFree] = freq[i];
             leftArr[nextFree] = -1;
             rightArr[nextFree] = -1;
-            cout << "Leaf node created for " << charArr[nextFree] << " (weight " << weightArr[nextFree] << ")\n";
             nextFree++;
         }
     }
-    cout << "Created " << nextFree << " leaf nodes.\n";
     return nextFree;
 }
 
@@ -104,32 +103,31 @@ int buildEncodingTree(int nextFree) {
     //    - Push new parent index back into the heap
     // 4. Return the index of the last remaining node (root)
     MinHeap heap;
-    cout << "Pushing leaf nodes into heap...\n";
-
+    //loops through all of the leaf nodes and if it has a positive frequency then it pushes it onto the heap
+    // the priority is based on the weights.
     for (int i = 0; i < nextFree; i++) {
         if (weightArr[i] >0) {
             heap.push(i, weightArr);
-            cout << "  pushed index " << i << " (weight " << weightArr[i] << ")\n";
         }
     }
 
+    //loops while it's not at the root node and pops the characters with the lowest frequencies
     while (heap.size > 1) {
         int left = heap.pop(weightArr);
         int right = heap.pop(weightArr);
 
-        cout << "Combining nodes " << left << " and " << right << "\n";
-
+        //makes a new parent node and combines the weights of the two children
         int parent = nextFree ++;
         weightArr[parent] = weightArr[left] + weightArr[right];
         leftArr[parent] = left;
         rightArr[parent] = right;
 
+        //pushes the parent back onto the heap
         heap.push(parent, weightArr);
-        cout << "  new parent node " << parent << " (weight " << weightArr[parent] << ")\n";
     }
+    // when the loop ends then it returns the root
     int root = heap.pop(weightArr);
-    cout << "Final root index: " << root << "\n";
-    return root; // placeholder
+    return root;
 
 }
 
@@ -143,9 +141,8 @@ void generateCodes(int root, string codes[]) {
     // push the root node onto the stack
     stack.push({root, ""});
 
-    cout << "Starting DFS code generation...\n";
-
     while (!stack.empty()) {
+        // take the top element off of the stack
         pair<int, string> top = stack.top();
         stack.pop();
 
@@ -155,7 +152,6 @@ void generateCodes(int root, string codes[]) {
         // check if it's a leaf node by seeing if the children are both -1
         if (leftArr[node] == -1 && rightArr[node] == -1) {
             codes[charArr[node] - 'a'] = code;
-            cout << "Leaf '" << charArr[node] << "' => code " << code << "\n";
         } else { // if not then the right child will get pushed on as a 1 and the left as a 0
             if (rightArr[node] != -1) {
                 pair<int, string> rightPair;
