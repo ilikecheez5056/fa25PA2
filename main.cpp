@@ -119,7 +119,7 @@ int buildEncodingTree(int nextFree) {
 
         cout << "Combining nodes " << left << " and " << right << "\n";
 
-        int parent = nextFree + 1;
+        int parent = nextFree ++;
         weightArr[parent] = weightArr[left] + weightArr[right];
         leftArr[parent] = left;
         rightArr[parent] = right;
